@@ -70,7 +70,7 @@ class VectorStore:
 
         self.chunks = all_chunks
 
-        embeddings = list(model.embed(all_chunks, batch_size=64))
+        embeddings = list(model.embed(all_chunks, batch_size=16))
         embeddings = np.array(embeddings, dtype="float32")
         embeddings = _normalize(embeddings)  # cosine similarity via inner product
 

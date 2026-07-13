@@ -30,7 +30,7 @@ TEXT_EXTENSIONS = frozenset({
 })
 
 MAX_FILE_BYTES = 80_000   # 80KB per file
-MAX_FILES = 120
+MAX_FILES = 60
 MAX_CONCURRENT = 10       # parallel file fetches
 
 SKIP_PATH_SEGMENTS = frozenset({
