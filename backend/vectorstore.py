@@ -4,6 +4,7 @@ from typing import List
 
 import numpy as np
 import faiss
+import gc
 
 # Lazy-loaded to avoid startup delay (first use downloads ~80MB model)
 _model = None
@@ -70,12 +71,15 @@ class VectorStore:
 
         self.chunks = all_chunks
 
-        embeddings = list(model.embed(all_chunks, batch_size=16))
+        embeddings = list(model.embed(all_chunks, batch_size=8))
         embeddings = np.array(embeddings, dtype="float32")
         embeddings = _normalize(embeddings)  # cosine similarity via inner product
 
         self.index = faiss.IndexFlatIP(EMBEDDING_DIM)
         self.index.add(embeddings)
+
+        del embeddings
+        gc.collect()
 
         return len(all_chunks)
 
