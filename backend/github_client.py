@@ -29,9 +29,9 @@ TEXT_EXTENSIONS = frozenset({
     ".eslintrc", ".prettierrc", ".babelrc", ".npmrc",
 })
 
-MAX_FILE_BYTES = 40_000   
-MAX_FILES = 30
-MAX_CONCURRENT = 5       
+MAX_FILE_BYTES = 80_000   
+MAX_FILES = 120
+MAX_CONCURRENT = 10       
 
 SKIP_PATH_SEGMENTS = frozenset({
     "node_modules", "vendor", ".git", "__pycache__",
