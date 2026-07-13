@@ -16,9 +16,16 @@ EMBEDDING_DIM = 384  # all-MiniLM-L6-v2 output dimension
 def get_model():
     global _model
     if _model is None:
-        from sentence_transformers import SentenceTransformer
-        _model = SentenceTransformer("all-MiniLM-L6-v2")
+        from fastembed import TextEmbedding
+        _model = TextEmbedding(model_name="BAAI/bge-small-en-v1.5")
     return _model
+
+
+def _normalize(vectors: np.ndarray) -> np.ndarray:
+    """L2-normalize rows so inner product == cosine similarity."""
+    norms = np.linalg.norm(vectors, axis=1, keepdims=True)
+    norms[norms == 0] = 1e-12
+    return vectors / norms
 
 
 def chunk_text(text: str, path: str) -> List[str]:
@@ -63,13 +70,9 @@ class VectorStore:
 
         self.chunks = all_chunks
 
-        embeddings = model.encode(
-            all_chunks,
-            batch_size=64,
-            show_progress_bar=False,
-            normalize_embeddings=True,  # cosine similarity via inner product
-        )
+        embeddings = list(model.embed(all_chunks, batch_size=64))
         embeddings = np.array(embeddings, dtype="float32")
+        embeddings = _normalize(embeddings)  # cosine similarity via inner product
 
         self.index = faiss.IndexFlatIP(EMBEDDING_DIM)
         self.index.add(embeddings)
@@ -82,11 +85,9 @@ class VectorStore:
             return []
 
         model = get_model()
-        query_embedding = model.encode(
-            [query],
-            normalize_embeddings=True,
-        )
+        query_embedding = list(model.embed([query]))
         query_embedding = np.array(query_embedding, dtype="float32")
+        query_embedding = _normalize(query_embedding)
 
         k = min(k, len(self.chunks))
         _, indices = self.index.search(query_embedding, k)
