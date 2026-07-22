@@ -1,13 +1,13 @@
 import os
 
-from groq import AsyncGroq
+from anthropic import AsyncAnthropic
 
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5")
 
 
 class ClaudeClient:
     def __init__(self, api_key: str | None = None):
-        self.client = AsyncGroq(api_key=api_key)
+        self.client = AsyncAnthropic(api_key=api_key)
 
     async def complete(
         self,
@@ -15,12 +15,12 @@ class ClaudeClient:
         user: str,
         max_tokens: int = 2048,
     ) -> str:
-        response = await self.client.chat.completions.create(
-            model=GROQ_MODEL,
+        response = await self.client.messages.create(
+            model=CLAUDE_MODEL,
             max_tokens=max_tokens,
+            system=system,
             messages=[
-                {"role": "system", "content": system},
                 {"role": "user", "content": user},
             ],
         )
-        return response.choices[0].message.content
+        return response.content[0].text

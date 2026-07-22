@@ -27,7 +27,7 @@ _stores: dict[str, VectorStore] = {}
 _metadata: dict[str, dict] = {}
 
 github = GitHubClient(token=os.getenv("GITHUB_TOKEN"))
-claude = ClaudeClient(api_key=os.getenv("GROQ_API_KEY"))
+claude = ClaudeClient(api_key=os.getenv("ANTHROPIC_API_KEY"))
 
 
 @asynccontextmanager
